@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: user_management_postgres
+    environment:
+      POSTGRES_DB: user-management-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - .\volumes\postgres_data:/var/lib/postgresql/data

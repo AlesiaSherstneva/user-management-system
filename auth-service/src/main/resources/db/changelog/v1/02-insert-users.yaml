@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: "2"
+      author: AlesiaSherstneva
+      changes:
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: first_name
+                  value: "Иван"
+              - column:
+                  name: last_name
+                  value: "Иванов"
+              - column:
+                  name: email
+                  value: "ivanov@example.com"
+              - column:
+                  name: password
+                  value: "$2a$10$N4oPMWwAzqiReWBdwiEgkOGZFhdVCYuFq4byqvXY4RunnxEIxpaJ2"
+                  # password: ivanov123
+              - column:
+                  name: role
+                  value: USER
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: first_name
+                  value: "Мария"
+              - column:
+                  name: last_name
+                  value: "Петрова"
+              - column:
+                  name: email
+                  value: "petrova@example.com"
+              - column:
+                  name: password
+                  value: "$2a$10$Ejz8tsZFHQR99xSLMUhTk.gmnZzyKYkZGctXga4bA1k6LPxxQrxbi"
+                  # password: petrova123
+              - column:
+                  name: role
+                  value: USER
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: first_name
+                  value: "Алексей"
+              - column:
+                  name: last_name
+                  value: "Сидоров"
+              - column:
+                  name: email
+                  value: "sidorov@example.com"
+              - column:
+                  name: password
+                  value: "$2a$10$1LUDx7FhczD6Ebqu.VwAWedluVUTly5l5BnPD5.N0oCf7wC7B7Jeq"
+                  # password: sidorov123
+              - column:
+                  name: role
+                  value: USER
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: first_name
+                  value: "Алеся"
+              - column:
+                  name: last_name
+                  value: "Шерстнёва"
+              - column:
+                  name: email
+                  value: "alesiasherstneva@gmail.com"
+              - column:
+                  name: password
+                  value: "$2a$12$ebYeJ3QFhbAhMklRTv1nwesfiOf5KOXU7DFzfu.rPejeF14Raxzci"
+                  # password: sherstneva123
+              - column:
+                  name: role
+                  value: ADMIN

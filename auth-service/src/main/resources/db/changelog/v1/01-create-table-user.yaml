@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: "1"
+      author: AlesiaSherstneva
+      changes:
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR(60)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(5)
+                  constraints:
+                    nullable: false
+                    checkConstraint: "role IN ('USER', 'ADMIN')"
