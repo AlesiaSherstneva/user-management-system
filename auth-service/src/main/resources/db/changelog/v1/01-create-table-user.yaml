@@ -27,6 +27,7 @@ databaseChangeLog:
                   name: email
                   type: VARCHAR(100)
                   constraints:
+                    unique: true
                     nullable: false
               - column:
                   name: password
@@ -35,7 +36,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: role
-                  type: VARCHAR(5)
+                  type: VARCHAR(10)
                   constraints:
                     nullable: false
-                    checkConstraint: "role IN ('USER', 'ADMIN')"
+                    checkConstraint: "role IN ('ROLE_USER', 'ROLE_ADMIN')"

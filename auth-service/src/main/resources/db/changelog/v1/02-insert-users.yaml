@@ -21,7 +21,7 @@ databaseChangeLog:
                   # password: ivanov123
               - column:
                   name: role
-                  value: USER
+                  value: ROLE_USER
         - insert:
             tableName: user
             columns:
@@ -40,7 +40,7 @@ databaseChangeLog:
                   # password: petrova123
               - column:
                   name: role
-                  value: USER
+                  value: ROLE_USER
         - insert:
             tableName: user
             columns:
@@ -59,7 +59,7 @@ databaseChangeLog:
                   # password: sidorov123
               - column:
                   name: role
-                  value: USER
+                  value: ROLE_USER
         - insert:
             tableName: user
             columns:
@@ -78,4 +78,4 @@ databaseChangeLog:
                   # password: sherstneva123
               - column:
                   name: role
-                  value: ADMIN
+                  value: ROLE_ADMIN
