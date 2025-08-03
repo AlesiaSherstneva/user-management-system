@@ -5,6 +5,8 @@ import com.example.dto.UserUpdateDto;
 import com.example.exception.EmailAlreadyRegisteredException;
 import com.example.exception.InvalidCredentialsException;
 import com.example.exception.UserNotFoundException;
+import com.example.kafka.UserEventPublisher;
+import com.example.kafka.event.enums.Action;
 import com.example.model.User;
 import com.example.model.enums.Role;
 import com.example.repository.UserRepository;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserEventPublisher eventPublisher;
 
     @Override
     public User getUserById(Long userId) {
@@ -34,28 +37,50 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setRole(Role.ROLE_USER);
 
-        return userRepository.save(newUser);
+        User createdUser = userRepository.save(newUser);
+        if (createdUser.getRole().equals(Role.ROLE_USER)) {
+            eventPublisher.publishEvent(createdUser, Action.CREATED);
+        }
+
+        return createdUser;
     }
 
     @Override
     public User updateUser(Long userId, UserUpdateDto userUpdateDto) {
-        User updatingUser = getUserById(userId);
+        User userToUpdate = getUserById(userId);
 
-        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().equals(updatingUser.getEmail())) {
+        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().equals(userToUpdate.getEmail())) {
             checkIfEmailWasNotRegisteredYet(userUpdateDto.getEmail());
-            updatingUser.setEmail(userUpdateDto.getEmail());
+            userToUpdate.setEmail(userUpdateDto.getEmail());
         }
         if (userUpdateDto.getFirstName() != null) {
-            updatingUser.setFirstName(userUpdateDto.getFirstName());
+            userToUpdate.setFirstName(userUpdateDto.getFirstName());
         }
         if (userUpdateDto.getLastName() != null) {
-            updatingUser.setLastName(userUpdateDto.getLastName());
+            userToUpdate.setLastName(userUpdateDto.getLastName());
         }
         if (userUpdateDto.getPassword() != null) {
-            updatingUser.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+            userToUpdate.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
 
-        return userRepository.save(updatingUser);
+        User updatedUser = userRepository.save(userToUpdate);
+        if (updatedUser.getRole().equals(Role.ROLE_USER)) {
+            eventPublisher.publishEvent(updatedUser, Action.UPDATED);
+        }
+
+        return updatedUser;
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        User userForDelete = userRepository.findUserById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        userRepository.delete(userForDelete);
+
+        if (userForDelete.getRole().equals(Role.ROLE_USER)) {
+            eventPublisher.publishEvent(userForDelete, Action.DELETED);
+        }
     }
 
     @Override
@@ -68,11 +93,6 @@ public class UserServiceImpl implements UserService {
         }
 
         return user;
-    }
-
-    @Override
-    public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
     }
 
     private void checkIfEmailWasNotRegisteredYet(String email) {
