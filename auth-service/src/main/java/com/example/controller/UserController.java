@@ -32,6 +32,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getCurrentUser(@RequestHeader("Authorization") String jwtToken) {
+        log.info("Request for retrieve current user profile");
         User currentUser = getUserFromJwtToken(jwtToken);
 
         return ResponseEntity.ok(userMapper.userToResponseDto(currentUser));
@@ -40,7 +41,9 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable("id") Long userId,
                                                        @RequestHeader("Authorization") String jwtToken) {
+        log.info("Request for retrieve user profile with id: {}", userId);
         User currentUser = getUserFromJwtToken(jwtToken);
+
         checkIfAdminOrCurrentUser(currentUser, userId);
 
         return ResponseEntity.ok(userMapper.userToResponseDto(userService.getUserById(userId)));
@@ -49,8 +52,11 @@ public class UserController {
     @PutMapping("/me")
     public ResponseEntity<UserResponseDto> editCurrentUser(@Valid @RequestBody UserUpdateDto userUpdateDto,
                                                            @RequestHeader("Authorization") String jwtToken) {
+        log.info("Request for update current user profile");
         User currentUser = getUserFromJwtToken(jwtToken);
+
         User updatedUser = userService.updateUser(currentUser.getId(), userUpdateDto);
+        log.info("User profile {} updated successfully by owner", updatedUser.getEmail());
 
         return ResponseEntity.ok(userMapper.userToResponseDto(updatedUser));
     }
@@ -59,24 +65,33 @@ public class UserController {
     public ResponseEntity<UserResponseDto> editUserById(@PathVariable("id") Long userId,
                                                         @Valid @RequestBody UserUpdateDto userUpdateDto,
                                                         @RequestHeader("Authorization") String jwtToken) {
+        log.info("Request for update user profile with id: {}", userId);
         User currentUser = getUserFromJwtToken(jwtToken);
+        log.info("Modifying user account id: {}, initiated by: {} with role: {}",
+                userId, currentUser.getEmail(), currentUser.getRole());
+
         checkIfAdminOrCurrentUser(currentUser, userId);
 
         if (isUserAdmin(currentUser) && !currentUser.getId().equals(userId)) {
             userUpdateDto.setEmail(null);
             userUpdateDto.setPassword(null);
+            log.debug("Admin restricted from changing credentials for other users");
         }
 
         User updatedUser = userService.updateUser(userId, userUpdateDto);
+        log.info("Profile updated successfully for user: {}, by: {} with role: {}",
+                updatedUser.getEmail(), currentUser.getEmail(), currentUser.getRole());
 
         return ResponseEntity.ok(userMapper.userToResponseDto(updatedUser));
     }
 
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteCurrentUser(@RequestHeader("Authorization") String jwtToken) {
+        log.warn("Request for delete current user profile");
         User currentUser = getUserFromJwtToken(jwtToken);
 
         userService.deleteUser(currentUser.getId());
+        log.warn("User profile {} deleted by owner", currentUser.getEmail());
 
         return ResponseEntity.noContent().build();
     }
@@ -84,10 +99,16 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable("id") Long userId,
                                                @RequestHeader("Authorization") String jwtToken) {
+        log.info("Request for delete user profile with id: {}", userId);
         User currentUser = getUserFromJwtToken(jwtToken);
+        log.warn("Deleting user account id: {}, initiated by: {} with role: {}",
+                userId, currentUser.getEmail(), currentUser.getRole());
+
         checkIfAdminOrCurrentUser(currentUser, userId);
 
         userService.deleteUser(userId);
+        log.info("User profile with id {} deleted by: {} with role: {}",
+                userId, currentUser.getEmail(), currentUser.getRole());
 
         return ResponseEntity.noContent().build();
     }
@@ -98,6 +119,7 @@ public class UserController {
 
     private void checkIfAdminOrCurrentUser(User user, Long userId) {
         if (!user.getId().equals(userId) && !isUserAdmin(user)) {
+            log.warn("Access denied: user {} action on id {}", user.getEmail(), userId);
             throw new AccessDeniedException();
         }
     }

@@ -25,3 +25,7 @@ spring:
 jwt:
   secret-key: abc123def456ghi789jkl012mno345pqr
   expiration: 86400000 # 1 day
+
+logging:
+  level:
+    com.example.*: DEBUG

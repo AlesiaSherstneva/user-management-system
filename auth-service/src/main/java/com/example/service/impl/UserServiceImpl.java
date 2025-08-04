@@ -28,8 +28,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public User getUserById(Long userId) {
-        return userRepository.findUserById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User receivedUser = userRepository.findUserById(userId)
+                .orElseThrow(() -> {
+                    log.warn("Lookup failed. User with id {} not found", userId);
+                    throw new UserNotFoundException(userId);
+                });
+        log.info("Returning user profile: {}", receivedUser.getEmail());
+
+        return receivedUser;
     }
 
     @Override
@@ -39,8 +45,11 @@ public class UserServiceImpl implements UserService {
 
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setRole(Role.ROLE_USER);
+        log.debug("Password encoded and role set for new user: {}", newUser.getEmail());
 
         User createdUser = userRepository.save(newUser);
+        log.info("New user {} registered with id: {}", createdUser.getEmail(), createdUser.getId());
+
         if (createdUser.getRole().equals(Role.ROLE_USER)) {
             eventPublisher.publishEvent(createdUser, Action.CREATED);
         }
@@ -68,6 +77,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User updatedUser = userRepository.save(userToUpdate);
+
         if (updatedUser.getRole().equals(Role.ROLE_USER)) {
             eventPublisher.publishEvent(updatedUser, Action.UPDATED);
         }
@@ -92,17 +102,24 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public User authenticateUser(AuthDto authDto) {
         User user = userRepository.findUserByEmail(authDto.getEmail())
-                .orElseThrow(() -> new UserNotFoundException(authDto.getEmail()));
+                .orElseThrow(() -> {
+                    log.warn("Authentication failed. User with email {} not found", authDto.getEmail());
+                    throw new UserNotFoundException(authDto.getEmail());
+                });
 
         if (!passwordEncoder.matches(authDto.getPassword(), user.getPassword())) {
+            log.warn("Authentication failed. Invalid password for email {}", authDto.getEmail());
             throw new InvalidCredentialsException();
         }
+
+        log.debug("Authenticated user: {}, role: {}", user.getEmail(), user.getRole());
 
         return user;
     }
 
     private void checkIfEmailWasNotRegisteredYet(String email) {
         if (userRepository.existsByEmail(email)) {
+            log.warn("Operation rejected: email {} already registered", email);
             throw new EmailAlreadyRegisteredException(email);
         }
     }
