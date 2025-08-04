@@ -30,6 +30,14 @@ services:
     volumes:
       - .\volumes\kafka_data:/bitnami/kafka
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: user_management_mailhog
+    ports:
+      - "1025:1025"  # SMTP-порт для отправки писем
+      - "8025:8025"  # Веб-интерфейс (http://localhost:8025)
+    restart: always
+
 volumes:
   postgres_data:
   kafka_data:
