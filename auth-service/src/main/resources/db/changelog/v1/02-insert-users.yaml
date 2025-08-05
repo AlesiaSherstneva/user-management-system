@@ -65,17 +65,36 @@ databaseChangeLog:
             columns:
               - column:
                   name: first_name
-                  value: "Алеся"
+                  value: "Александр"
               - column:
                   name: last_name
-                  value: "Шерстнёва"
+                  value: "Админов"
               - column:
                   name: email
-                  value: "alesiasherstneva@gmail.com"
+                  value: "admin1@example.com"
               - column:
                   name: password
-                  value: "$2a$12$ebYeJ3QFhbAhMklRTv1nwesfiOf5KOXU7DFzfu.rPejeF14Raxzci"
-                  # password: sherstneva123
+                  value: "$2a$12$jUasOaaBhzi5W961oyeCVO8vKOYtfAlmA7bo0a4TSDRy5loPGn8zC"
+                  # password: AdminPass123$
+              - column:
+                  name: role
+                  value: ROLE_ADMIN
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: first_name
+                  value: "Екатерина"
+              - column:
+                  name: last_name
+                  value: "Администраторова"
+              - column:
+                  name: email
+                  value: "admin2@example.com"
+              - column:
+                  name: password
+                  value: "$2a$12$69mKQxmjsDI6uRMMaTkikuHzUH2x9XjtUo2LrwWzdiRjkRUuWCdRK"
+                  # password: SecureAdmin456%
               - column:
                   name: role
                   value: ROLE_ADMIN

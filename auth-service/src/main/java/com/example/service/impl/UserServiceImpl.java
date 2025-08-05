@@ -5,7 +5,7 @@ import com.example.dto.UserUpdateDto;
 import com.example.exception.EmailAlreadyRegisteredException;
 import com.example.exception.InvalidCredentialsException;
 import com.example.exception.UserNotFoundException;
-import com.example.kafka.UserEventPublisher;
+import com.example.kafka.publisher.UserEventPublisher;
 import com.example.kafka.event.enums.Action;
 import com.example.model.User;
 import com.example.model.enums.Role;
@@ -28,14 +28,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public User getUserById(Long userId) {
-        User receivedUser = userRepository.findUserById(userId)
+        return userRepository.findUserById(userId)
                 .orElseThrow(() -> {
                     log.warn("Lookup failed. User with id {} not found", userId);
                     throw new UserNotFoundException(userId);
                 });
-        log.info("Returning user profile: {}", receivedUser.getEmail());
-
-        return receivedUser;
     }
 
     @Override

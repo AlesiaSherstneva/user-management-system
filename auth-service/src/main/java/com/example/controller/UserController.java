@@ -34,6 +34,7 @@ public class UserController {
     public ResponseEntity<UserResponseDto> getCurrentUser(@RequestHeader("Authorization") String jwtToken) {
         log.info("Request for retrieve current user profile");
         User currentUser = getUserFromJwtToken(jwtToken);
+        log.info("Returning user profile: {}", currentUser.getEmail());
 
         return ResponseEntity.ok(userMapper.userToResponseDto(currentUser));
     }
@@ -46,7 +47,10 @@ public class UserController {
 
         checkIfAdminOrCurrentUser(currentUser, userId);
 
-        return ResponseEntity.ok(userMapper.userToResponseDto(userService.getUserById(userId)));
+        User receivedUser = userService.getUserById(userId);
+        log.info("Returning user profile: {}", receivedUser.getEmail());
+
+        return ResponseEntity.ok(userMapper.userToResponseDto(receivedUser));
     }
 
     @PutMapping("/me")

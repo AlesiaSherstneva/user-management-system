@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: user-management-service
+    name: auth-service
   datasource:
     url: jdbc:postgresql://localhost:5433/user-management-db
     username: postgres

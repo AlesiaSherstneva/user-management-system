@@ -1,4 +1,4 @@
-package com.example.kafka;
+package com.example.kafka.publisher;
 
 import com.example.kafka.event.UserEvent;
 import com.example.kafka.event.enums.Action;
