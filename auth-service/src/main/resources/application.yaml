@@ -16,6 +16,10 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -25,7 +29,3 @@ spring:
 jwt:
   secret-key: abc123def456ghi789jkl012mno345pqr
   expiration: 86400000 # 1 day
-
-logging:
-  level:
-    com.example.*: DEBUG
